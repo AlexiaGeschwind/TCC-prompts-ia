@@ -48,7 +48,7 @@ Como as landing pages foram desenvolvidas utilizando HTML, CSS e JS nativos:
 
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+   git clone https://github.com/AlexiaGeschwind/TCC-prompts-ia.git
    ```
 2. Navegue até a pasta da landing page desejada (exemplo: `PROMPTS CLAUDE/PROMPT 1`).
 3. Abra o arquivo `index.html` em qualquer navegador web de sua preferência.
