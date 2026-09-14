@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Radial Gradient for the 3D Sphere -->
+    <radialGradient id="sphereGrad" cx="35%" cy="30%" r="70%" fx="35%" fy="30%">
+      <stop offset="0%" stop-color="#34D399" />   <!-- Lighter mint-green center highlight -->
+      <stop offset="30%" stop-color="#10B981" />  <!-- Vibrant emerald green -->
+      <stop offset="65%" stop-color="#059669" />  <!-- Deep green -->
+      <stop offset="85%" stop-color="#047857" />  <!-- Forest green -->
+      <stop offset="100%" stop-color="#064E3B" /> <!-- Dark moss shadow -->
+    </radialGradient>
+
+    <!-- Linear Gradient for the Glossy Highlight -->
+    <linearGradient id="glossGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
+      <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Drop Shadow for the sphere -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="15" stdDeviation="15" flood-color="#047857" flood-opacity="0.25" />
+    </filter>
+
+    <!-- Clipping mask to keep waves inside the sphere -->
+    <clipPath id="sphereClip">
+      <circle cx="250" cy="250" r="220" />
+    </clipPath>
+  </defs>
+
+  <!-- Sphere Shadow -->
+  <circle cx="250" cy="250" r="220" fill="none" filter="url(#dropShadow)" />
+
+  <!-- Base 3D Sphere -->
+  <circle cx="250" cy="250" r="220" fill="url(#sphereGrad)" />
+
+  <!-- White Wave/Curves group clipped to the sphere -->
+  <g clip-path="url(#sphereClip)">
+    <!-- Lower Wavy Curve -->
+    <path d="M -50,330 
+             C 100,320 180,480 340,320 
+             C 410,250 480,180 550,150
+             L 550,220
+             C 480,250 410,320 340,390
+             C 180,550 100,390 -50,400 Z" 
+          fill="#FFFFFF" />
+
+    <!-- Upper Wavy Curve -->
+    <path d="M -50,190 
+             C 100,180 180,340 340,180 
+             C 410,110 480,40 550,10
+             L 550,80
+             C 480,110 410,180 340,250
+             C 180,410 100,250 -50,260 Z" 
+          fill="#FFFFFF" />
+          
+    <!-- Inner soft shadow under the waves to give 3D depth -->
+    <path d="M -50,330 C 100,320 180,480 340,320 C 410,250 480,180 550,150" 
+          fill="none" stroke="#047857" stroke-width="8" opacity="0.3" filter="blur(4px)" />
+    <path d="M -50,190 C 100,180 180,340 340,180 C 410,110 480,40 550,10" 
+          fill="none" stroke="#047857" stroke-width="8" opacity="0.3" filter="blur(4px)" />
+  </g>
+
+  <!-- 3D Glass Glossy Overlay (Top reflection) -->
+  <path d="M 50,200 
+           A 220,220 0 0,1 450,200 
+           C 400,120 330,80 250,80 
+           C 170,80 100,120 50,200 Z" 
+        fill="url(#glossGrad)" />
+
+  <!-- Bottom Rim Light (Simulates bounce light) -->
+  <circle cx="250" cy="254" r="218" fill="none" stroke="#A7F3D0" stroke-width="3" opacity="0.4" clip-path="url(#sphereClip)" />
+</svg>

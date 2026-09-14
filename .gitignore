@@ -1,0 +1,18 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Node dependencies
+node_modules/
+npm-debug.log*
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+
+# Temporary files
+_temp_organize/
+_temp_organized/
+*.tmp
