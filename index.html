@@ -639,6 +639,107 @@
       box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
     }
 
+    /* Comments Section */
+    .comments-section {
+      margin-top: 3.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .comments-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .comments-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .comments-title {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .comments-icon {
+      font-size: 1.5rem;
+    }
+
+    .comments-title h3 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .comments-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .comments-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .comments-textarea {
+      width: 100%;
+      background: rgba(5, 8, 15, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 1rem;
+      color: #ffffff;
+      font-family: var(--font-main);
+      font-size: 0.95rem;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .comments-textarea:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .comments-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+
+    .btn-save-comment {
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      color: #ffffff;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+    }
+
+    .btn-save-comment:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(56, 189, 248, 0.35);
+    }
+
     /* Modal / Drawer for Quick Preview */
     .modal-overlay {
       position: fixed;
@@ -1453,6 +1554,26 @@
       </div>
     </section>
 
+    <!-- GENERAL COMMENTS SECTION -->
+    <section class="comments-section">
+      <div class="comments-card">
+        <div class="comments-header">
+          <div class="comments-title">
+            <span class="comments-icon">💬</span>
+            <h3>Observações e Comentários Gerais</h3>
+          </div>
+          <span class="comments-badge">Opcional</span>
+        </div>
+        <p class="comments-subtitle">Deixe aqui suas impressões gerais, observações adicionais sobre os prompts/modelos ou considerações para a pesquisa do TCC.</p>
+        <div class="comments-body">
+          <textarea id="generalCommentInput" class="comments-textarea" placeholder="Escreva seu comentário ou observações gerais..." rows="4"></textarea>
+          <div class="comments-actions">
+            <button type="button" class="btn-save-comment" onclick="saveGeneralComment()">💾 Salvar Comentário</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Modal / Drawer for Quick Preview -->
@@ -1488,10 +1609,12 @@
     // State storage for evaluations
     const STORAGE_KEY_NAME = 'tcc_evaluator_name';
     const STORAGE_KEY_ROLE = 'tcc_evaluator_role';
+    const STORAGE_KEY_COMMENT = 'tcc_evaluator_comment';
     const STORAGE_KEY_RATINGS = 'tcc_prompt_ratings_v1';
 
     let evaluatorName = localStorage.getItem(STORAGE_KEY_NAME) || '';
     let evaluatorRole = localStorage.getItem(STORAGE_KEY_ROLE) || '';
+    let evaluatorComment = localStorage.getItem(STORAGE_KEY_COMMENT) || '';
     let ratingsData = JSON.parse(localStorage.getItem(STORAGE_KEY_RATINGS) || '{}');
 
     // UI Elements
@@ -1509,7 +1632,28 @@
       }
       renderRatings();
       setupStarEvents();
+      setupCommentEvents();
     });
+
+    function setupCommentEvents() {
+      const commentInput = document.getElementById('generalCommentInput');
+      if (commentInput) {
+        commentInput.value = evaluatorComment;
+        commentInput.addEventListener('input', () => {
+          evaluatorComment = commentInput.value;
+          localStorage.setItem(STORAGE_KEY_COMMENT, evaluatorComment);
+        });
+      }
+    }
+
+    function saveGeneralComment() {
+      const commentInput = document.getElementById('generalCommentInput');
+      if (commentInput) {
+        evaluatorComment = commentInput.value.trim();
+        localStorage.setItem(STORAGE_KEY_COMMENT, evaluatorComment);
+        showToast('Comentário salvo com sucesso!');
+      }
+    }
 
     function openNameModal() {
       evaluatorInput.value = evaluatorName;
@@ -1656,6 +1800,7 @@
       return {
         avaliador: evaluatorName || "Não Informado",
         trabalhaComTechDesign: evaluatorRole || "Não Informado",
+        comentarioGeral: evaluatorComment || "",
         dataExportacao: new Date().toISOString(),
         totalPromptsAvaliados: Object.keys(ratingsData).length,
         resultados: formattedRatings
