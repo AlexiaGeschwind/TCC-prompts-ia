@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TCC - Comparativo de Prompts de IA | Hub Interativo</title>
-  <meta name="description" content="Portal de visualização comparativa de landing pages geradas por LLMs (Claude, Gemini, GPT-OSS) com base em 3 níveis de prompts.">
+  <title>TCC - Comparativo de Prompts de IA | Hub Interativo com Avaliação</title>
+  <meta name="description" content="Portal de visualização comparativa e avaliação de landing pages geradas por LLMs (Claude, Gemini, GPT-OSS) com base em 3 níveis de prompts.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -26,6 +26,9 @@
       
       --gpt-color: #10b981;
       --gpt-glow: rgba(16, 185, 129, 0.15);
+
+      --star-active: #fbbf24;
+      --star-inactive: #475569;
       
       --radius-lg: 16px;
       --radius-sm: 8px;
@@ -61,7 +64,7 @@
 
     /* Header */
     header {
-      padding: 3rem 0 2rem;
+      padding: 2.5rem 0 2rem;
       text-align: center;
       position: relative;
     }
@@ -96,7 +99,98 @@
       font-size: 1.15rem;
       color: var(--text-muted);
       max-width: 700px;
-      margin: 0 auto 2.5rem;
+      margin: 0 auto 1.5rem;
+    }
+
+    /* Evaluator Bar */
+    .evaluator-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: rgba(19, 27, 46, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.8rem 1.5rem;
+      border-radius: 14px;
+      max-width: 850px;
+      margin: 0 auto 2rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      flex-wrap: wrap;
+    }
+
+    .evaluator-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .evaluator-name {
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    .btn-edit-evaluator {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-edit-evaluator:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    .evaluator-actions {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .btn-json-export {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .btn-json-export:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-json-copy {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-json-copy:hover {
+      background: rgba(255, 255, 255, 0.16);
     }
 
     /* Filters */
@@ -200,7 +294,7 @@
     /* Cards Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 1.5rem;
     }
 
@@ -233,14 +327,14 @@
     .card[data-model="gpt"]::before { background: var(--gpt-color); }
 
     .card:hover {
-      transform: translateY(-6px);
+      transform: translateY(-4px);
       background: var(--bg-card-hover);
       border-color: rgba(255, 255, 255, 0.2);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
     }
 
     .card-top {
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
     }
 
     .card-tags {
@@ -275,10 +369,85 @@
       line-height: 1.5;
     }
 
+    /* Rating Component inside Cards */
+    .card-rating-box {
+      background: rgba(5, 8, 15, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 1.2rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .rating-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 0.4rem;
+    }
+
+    .rating-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .rating-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .rating-score-val {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+
+    .stars-row {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .star-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.35rem;
+      color: var(--star-inactive);
+      cursor: pointer;
+      transition: transform 0.15s ease, color 0.15s ease;
+      padding: 0 2px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .star-btn:hover,
+    .star-btn.hover-active,
+    .star-btn.selected {
+      color: var(--star-active);
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+
+    .star-btn:hover {
+      transform: scale(1.3);
+    }
+
     .card-actions {
       display: flex;
       gap: 0.8rem;
-      margin-top: 1.5rem;
+      margin-top: 0.5rem;
     }
 
     .btn-action {
@@ -316,6 +485,115 @@
     .btn-open:hover {
       background: linear-gradient(135deg, #1d4ed8, #1e40af);
       transform: scale(1.02);
+    }
+
+    /* INITIAL NAME MODAL */
+    .name-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 8, 15, 0.88);
+      backdrop-filter: blur(12px);
+      z-index: 4000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .name-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .name-modal-card {
+      background: #131b2e;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalSlideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .name-modal-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .name-modal-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+    }
+
+    .name-modal-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 1.8rem;
+    }
+
+    .name-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .name-input-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .name-input {
+      width: 100%;
+      background: rgba(5, 8, 15, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 1rem;
+      font-family: var(--font-main);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .name-input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .btn-submit-name {
+      width: 100%;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      color: #ffffff;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+    }
+
+    .btn-submit-name:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
     }
 
     /* Modal / Drawer for Quick Preview */
@@ -431,6 +709,30 @@
       border: none;
     }
 
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #10b981;
+      color: white;
+      padding: 0.8rem 1.4rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 5000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     /* Footer */
     footer {
       text-align: center;
@@ -445,17 +747,49 @@
       .title { font-size: 2rem; }
       .grid { grid-template-columns: 1fr; }
       .viewport-controls { display: none; }
+      .evaluator-bar { flex-direction: column; text-align: center; }
+      .evaluator-actions { width: 100%; justify-content: center; margin-top: 0.5rem; }
     }
   </style>
 </head>
 <body>
 
+  <!-- INITIAL NAME MODAL -->
+  <div class="name-modal-overlay" id="nameModal">
+    <div class="name-modal-card">
+      <div class="name-modal-icon">✍️</div>
+      <h2 class="name-modal-title">Identificação do Avaliador</h2>
+      <p class="name-modal-subtitle">Por favor, insira o seu nome para registrar a avaliação dos prompts no arquivo JSON do TCC.</p>
+      
+      <form id="nameForm" onsubmit="saveEvaluatorName(event)">
+        <div class="name-input-group">
+          <label for="evaluatorInput">Seu Nome Completo:</label>
+          <input type="text" id="evaluatorInput" class="name-input" placeholder="Ex: Alexia Geschwind" required autocomplete="name">
+        </div>
+        <button type="submit" class="btn-submit-name">Confirmar e Iniciar Avaliação</button>
+      </form>
+    </div>
+  </div>
+
   <header>
     <div class="container">
       <div class="badge-header">⚡ TCC - Trabalho de Conclusão de Curso</div>
       <h1 class="title">Comparativo de Prompts de IA</h1>
-      <p class="subtitle">Navegue e compare o código front-end e o design de landing pages geradas por Anthropic Claude, Google Gemini e GPT-OSS.</p>
+      <p class="subtitle">Navegue, compare o código front-end e avalie as landing pages geradas por Anthropic Claude, Google Gemini e GPT-OSS na escala Likert (1 a 5).</p>
       
+      <!-- Evaluator Info Bar & JSON Actions -->
+      <div class="evaluator-bar">
+        <div class="evaluator-info">
+          <span>👤 Avaliador:</span>
+          <span class="evaluator-name" id="displayEvaluatorName">Não Informado</span>
+          <button class="btn-edit-evaluator" onclick="openNameModal()">[Alterar]</button>
+        </div>
+        <div class="evaluator-actions">
+          <button class="btn-json-copy" onclick="copyRatingsJSON()" title="Copiar código JSON para a área de transferência">📋 Copiar JSON</button>
+          <button class="btn-json-export" onclick="exportRatingsJSON()" title="Baixar arquivo JSON com as avaliações">📥 Baixar JSON</button>
+        </div>
+      </div>
+
       <div class="filter-bar">
         <button class="filter-btn active" data-model="all">🌐 Todos os Modelos (9)</button>
         <button class="filter-btn" data-model="claude">🧡 Claude (3)</button>
@@ -474,7 +808,8 @@
         <h2>Anthropic Claude</h2>
       </div>
       <div class="grid">
-        <div class="card" data-model="claude">
+        <!-- Claude P1 -->
+        <div class="card" data-model="claude" data-prompt-id="claude-p1" data-prompt-title="Claude - Prompt 1">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p1">Prompt 1</span>
@@ -483,13 +818,61 @@
             <h3 class="card-title">Claude - Prompt 1</h3>
             <p class="card-desc">Estrutura inicial com foco em layout semântico, catálogo de peças e seções responsivas.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS CLAUDE/PROMPT 1/index.html', 'Claude - Prompt 1')">⚡ Prévia</button>
             <a href="./PROMPTS CLAUDE/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
           </div>
         </div>
 
-        <div class="card" data-model="claude">
+        <!-- Claude P2 -->
+        <div class="card" data-model="claude" data-prompt-id="claude-p2" data-prompt-title="Claude - Prompt 2">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p2">Prompt 2</span>
@@ -498,13 +881,61 @@
             <h3 class="card-title">Claude - Prompt 2</h3>
             <p class="card-desc">Refinamento estético com design limpo, tipografia moderna e menu responsivo.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS CLAUDE/PROMPT 2/index.html', 'Claude - Prompt 2')">⚡ Prévia</button>
             <a href="./PROMPTS CLAUDE/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
           </div>
         </div>
 
-        <div class="card" data-model="claude">
+        <!-- Claude P3 -->
+        <div class="card" data-model="claude" data-prompt-id="claude-p3" data-prompt-title="Claude - Prompt 3">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p3">Prompt 3</span>
@@ -513,6 +944,53 @@
             <h3 class="card-title">Claude - Prompt 3</h3>
             <p class="card-desc">Landing page completa com estatísticas, depoimentos, formulário interativo e design premium.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS CLAUDE/PROMPT 3/index.html', 'Claude - Prompt 3')">⚡ Prévia</button>
             <a href="./PROMPTS CLAUDE/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
@@ -528,7 +1006,8 @@
         <h2>Google Gemini</h2>
       </div>
       <div class="grid">
-        <div class="card" data-model="gemini">
+        <!-- Gemini P1 -->
+        <div class="card" data-model="gemini" data-prompt-id="gemini-p1" data-prompt-title="Gemini - Prompt 1">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p1">Prompt 1</span>
@@ -537,13 +1016,61 @@
             <h3 class="card-title">Gemini - Prompt 1</h3>
             <p class="card-desc">Interface leve com elementos de destaque, paleta verde agro e estrutura modular.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GEMINI/PROMPT 1/index.html', 'Gemini - Prompt 1')">⚡ Prévia</button>
             <a href="./PROMPTS GEMINI/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
           </div>
         </div>
 
-        <div class="card" data-model="gemini">
+        <!-- Gemini P2 -->
+        <div class="card" data-model="gemini" data-prompt-id="gemini-p2" data-prompt-title="Gemini - Prompt 2">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p2">Prompt 2</span>
@@ -552,13 +1079,61 @@
             <h3 class="card-title">Gemini - Prompt 2</h3>
             <p class="card-desc">Design enriquecido com componentes dinâmicos, cards com sombras e microinterações.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GEMINI/PROMPT 2/index.html', 'Gemini - Prompt 2')">⚡ Prévia</button>
             <a href="./PROMPTS GEMINI/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
           </div>
         </div>
 
-        <div class="card" data-model="gemini">
+        <!-- Gemini P3 -->
+        <div class="card" data-model="gemini" data-prompt-id="gemini-p3" data-prompt-title="Gemini - Prompt 3">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p3">Prompt 3</span>
@@ -567,6 +1142,53 @@
             <h3 class="card-title">Gemini - Prompt 3</h3>
             <p class="card-desc">Versão ultra-detalhada com seções de depoimentos, FAQ sanfonado e formulário completo.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GEMINI/PROMPT 3/index.html', 'Gemini - Prompt 3')">⚡ Prévia</button>
             <a href="./PROMPTS GEMINI/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
@@ -582,7 +1204,8 @@
         <h2>GPT-OSS</h2>
       </div>
       <div class="grid">
-        <div class="card" data-model="gpt">
+        <!-- GPT-OSS P1 -->
+        <div class="card" data-model="gpt" data-prompt-id="gpt-p1" data-prompt-title="GPT-OSS - Prompt 1">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p1">Prompt 1</span>
@@ -591,13 +1214,61 @@
             <h3 class="card-title">GPT-OSS - Prompt 1</h3>
             <p class="card-desc">Estilo escuro futurista com acentuações em verde, layout responsivo minimalista.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 1/index.html', 'GPT-OSS - Prompt 1')">⚡ Prévia</button>
             <a href="./PROMPTS GPT-OSS/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
           </div>
         </div>
 
-        <div class="card" data-model="gpt">
+        <!-- GPT-OSS P2 -->
+        <div class="card" data-model="gpt" data-prompt-id="gpt-p2" data-prompt-title="GPT-OSS - Prompt 2">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p2">Prompt 2</span>
@@ -606,13 +1277,61 @@
             <h3 class="card-title">GPT-OSS - Prompt 2</h3>
             <p class="card-desc">Sistema de design completo com variáveis CSS, suporte a modo claro/escuro e interatividade.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 2/index.html', 'GPT-OSS - Prompt 2')">⚡ Prévia</button>
             <a href="./PROMPTS GPT-OSS/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
           </div>
         </div>
 
-        <div class="card" data-model="gpt">
+        <!-- GPT-OSS P3 -->
+        <div class="card" data-model="gpt" data-prompt-id="gpt-p3" data-prompt-title="GPT-OSS - Prompt 3">
           <div class="card-top">
             <div class="card-tags">
               <span class="tag tag-p3">Prompt 3</span>
@@ -621,6 +1340,53 @@
             <h3 class="card-title">GPT-OSS - Prompt 3</h3>
             <p class="card-desc">Estrutura executiva completa para a CenterAgro, com imagens, depoimentos e FAQ.</p>
           </div>
+
+          <!-- RATING BOX -->
+          <div class="card-rating-box">
+            <div class="rating-header">
+              <span>⭐ Avaliação Likert (1 a 5)</span>
+            </div>
+            <div class="rating-item" data-topic="coerenciaVisual">
+              <div class="rating-item-header">
+                <span>Coerência Visual</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="experienciaUsuario">
+              <div class="rating-item-header">
+                <span>Experiência do Usuário (UX)</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+            <div class="rating-item" data-topic="atratividadeEstetica">
+              <div class="rating-item-header">
+                <span>Atratividade Estética</span>
+                <span class="rating-score-val" data-score-display>-</span>
+              </div>
+              <div class="stars-row">
+                <button type="button" class="star-btn" data-value="1" title="1 - Muito Ruim">★</button>
+                <button type="button" class="star-btn" data-value="2" title="2 - Ruim">★</button>
+                <button type="button" class="star-btn" data-value="3" title="3 - Regular">★</button>
+                <button type="button" class="star-btn" data-value="4" title="4 - Bom">★</button>
+                <button type="button" class="star-btn" data-value="5" title="5 - Excelente">★</button>
+              </div>
+            </div>
+          </div>
+
           <div class="card-actions">
             <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 3/index.html', 'GPT-OSS - Prompt 3')">⚡ Prévia</button>
             <a href="./PROMPTS GPT-OSS/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
@@ -651,6 +1417,9 @@
     </div>
   </div>
 
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">Feedback enviado!</div>
+
   <footer>
     <div class="container">
       <p>&copy; 2026 Alexia Geschwind — Trabalho de Conclusão de Curso (TCC). Todos os direitos reservados.</p>
@@ -658,6 +1427,217 @@
   </footer>
 
   <script>
+    // State storage for evaluations
+    const STORAGE_KEY_NAME = 'tcc_evaluator_name';
+    const STORAGE_KEY_RATINGS = 'tcc_prompt_ratings_v1';
+
+    let evaluatorName = localStorage.getItem(STORAGE_KEY_NAME) || '';
+    let ratingsData = JSON.parse(localStorage.getItem(STORAGE_KEY_RATINGS) || '{}');
+
+    // UI Elements
+    const nameModal = document.getElementById('nameModal');
+    const evaluatorInput = document.getElementById('evaluatorInput');
+    const displayEvaluatorName = document.getElementById('displayEvaluatorName');
+    const toast = document.getElementById('toast');
+
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!evaluatorName) {
+        openNameModal();
+      } else {
+        updateEvaluatorDisplay();
+      }
+      renderRatings();
+      setupStarEvents();
+    });
+
+    function openNameModal() {
+      evaluatorInput.value = evaluatorName;
+      nameModal.classList.add('active');
+      setTimeout(() => evaluatorInput.focus(), 100);
+    }
+
+    function saveEvaluatorName(e) {
+      e.preventDefault();
+      const val = evaluatorInput.value.trim();
+      if (!val) return;
+
+      evaluatorName = val;
+      localStorage.setItem(STORAGE_KEY_NAME, evaluatorName);
+      updateEvaluatorDisplay();
+      nameModal.classList.remove('active');
+      showToast('Avaliador identificado com sucesso!');
+    }
+
+    function updateEvaluatorDisplay() {
+      displayEvaluatorName.textContent = evaluatorName || 'Não Informado';
+    }
+
+    function setupStarEvents() {
+      document.querySelectorAll('.card').forEach(card => {
+        const promptId = card.getAttribute('data-prompt-id');
+
+        card.querySelectorAll('.rating-item').forEach(item => {
+          const topic = item.getAttribute('data-topic');
+          const starBtns = item.querySelectorAll('.star-btn');
+          const scoreDisplay = item.querySelector('[data-score-display]');
+
+          starBtns.forEach((star, index) => {
+            const starValue = index + 1;
+
+            // Hover effect
+            star.addEventListener('mouseenter', () => {
+              highlightStars(starBtns, starValue, 'hover-active');
+            });
+
+            star.addEventListener('mouseleave', () => {
+              clearHover(starBtns);
+            });
+
+            // Click action
+            star.addEventListener('click', () => {
+              if (!evaluatorName) {
+                openNameModal();
+                return;
+              }
+
+              if (!ratingsData[promptId]) {
+                ratingsData[promptId] = {};
+              }
+
+              ratingsData[promptId][topic] = starValue;
+              localStorage.setItem(STORAGE_KEY_RATINGS, JSON.stringify(ratingsData));
+
+              updateItemStars(starBtns, starValue, scoreDisplay);
+              showToast(`Nota ${starValue} salva!`);
+            });
+          });
+        });
+      });
+    }
+
+    function highlightStars(starBtns, count, className) {
+      starBtns.forEach((s, idx) => {
+        if (idx < count) {
+          s.classList.add(className);
+        } else {
+          s.classList.remove(className);
+        }
+      });
+    }
+
+    function clearHover(starBtns) {
+      starBtns.forEach(s => s.classList.remove('hover-active'));
+    }
+
+    function updateItemStars(starBtns, selectedValue, scoreDisplay) {
+      starBtns.forEach((s, idx) => {
+        if (idx < selectedValue) {
+          s.classList.add('selected');
+        } else {
+          s.classList.remove('selected');
+        }
+      });
+      if (scoreDisplay) {
+        scoreDisplay.textContent = selectedValue ? `${selectedValue}/5` : '-';
+      }
+    }
+
+    function renderRatings() {
+      document.querySelectorAll('.card').forEach(card => {
+        const promptId = card.getAttribute('data-prompt-id');
+        const pRatings = ratingsData[promptId] || {};
+
+        card.querySelectorAll('.rating-item').forEach(item => {
+          const topic = item.getAttribute('data-topic');
+          const starBtns = item.querySelectorAll('.star-btn');
+          const scoreDisplay = item.querySelector('[data-score-display]');
+
+          const val = pRatings[topic] || 0;
+          updateItemStars(starBtns, val, scoreDisplay);
+        });
+      });
+    }
+
+    function getFormattedJSONData() {
+      const formattedRatings = {};
+
+      document.querySelectorAll('.card').forEach(card => {
+        const promptId = card.getAttribute('data-prompt-id');
+        const promptTitle = card.getAttribute('data-prompt-title');
+        const model = card.getAttribute('data-model');
+        const pRatings = ratingsData[promptId] || {};
+
+        formattedRatings[promptId] = {
+          id: promptId,
+          titulo: promptTitle,
+          modelo: model.toUpperCase(),
+          avaliacoes: {
+            coerenciaVisual: pRatings.coerenciaVisual || null,
+            experienciaUsuario: pRatings.experienciaUsuario || null,
+            atratividadeEstetica: pRatings.atratividadeEstetica || null
+          }
+        };
+      });
+
+      return {
+        avaliador: evaluatorName || "Não Informado",
+        dataExportacao: new Date().toISOString(),
+        totalPromptsAvaliados: Object.keys(ratingsData).length,
+        resultados: formattedRatings
+      };
+    }
+
+    function exportRatingsJSON() {
+      if (!evaluatorName) {
+        openNameModal();
+        return;
+      }
+
+      const data = getFormattedJSONData();
+      const jsonString = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const safeName = evaluatorName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      const filename = `avaliacao_tcc_${safeName}.json`;
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast('Arquivo JSON baixado!');
+    }
+
+    function copyRatingsJSON() {
+      if (!evaluatorName) {
+        openNameModal();
+        return;
+      }
+
+      const data = getFormattedJSONData();
+      const jsonString = JSON.stringify(data, null, 2);
+
+      navigator.clipboard.writeText(jsonString).then(() => {
+        showToast('JSON copiado para a área de transferência!');
+      }).catch(err => {
+        console.error('Erro ao copiar JSON:', err);
+        showToast('Erro ao copiar JSON.');
+      });
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
     // Filter Functionality
     const filterBtns = document.querySelectorAll('.filter-btn');
     const sections = document.querySelectorAll('.model-section');
