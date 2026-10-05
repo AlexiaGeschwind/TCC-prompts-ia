@@ -577,6 +577,49 @@
       box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
     }
 
+    .radio-options {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 0.2rem;
+    }
+
+    .radio-card {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(5, 8, 15, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .radio-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .radio-card input[type="radio"] {
+      accent-color: #38bdf8;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .radio-card.active-radio,
+    .radio-card:has(input[type="radio"]:checked) {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
     .btn-submit-name {
       width: 100%;
       background: linear-gradient(135deg, #38bdf8, #0284c7);
@@ -766,6 +809,21 @@
           <label for="evaluatorInput">Seu Nome Completo:</label>
           <input type="text" id="evaluatorInput" class="name-input" placeholder="Ex: Alexia Geschwind" required autocomplete="name">
         </div>
+
+        <div class="name-input-group">
+          <label>Você trabalha com programação, design ou afins?</label>
+          <div class="radio-options">
+            <label class="radio-card">
+              <input type="radio" name="techDesignRole" value="Sim" required>
+              <span>Sim</span>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="techDesignRole" value="Não" required>
+              <span>Não</span>
+            </label>
+          </div>
+        </div>
+
         <button type="submit" class="btn-submit-name">Confirmar e Iniciar Avaliação</button>
       </form>
     </div>
@@ -1429,9 +1487,11 @@
   <script>
     // State storage for evaluations
     const STORAGE_KEY_NAME = 'tcc_evaluator_name';
+    const STORAGE_KEY_ROLE = 'tcc_evaluator_role';
     const STORAGE_KEY_RATINGS = 'tcc_prompt_ratings_v1';
 
     let evaluatorName = localStorage.getItem(STORAGE_KEY_NAME) || '';
+    let evaluatorRole = localStorage.getItem(STORAGE_KEY_ROLE) || '';
     let ratingsData = JSON.parse(localStorage.getItem(STORAGE_KEY_RATINGS) || '{}');
 
     // UI Elements
@@ -1442,7 +1502,7 @@
 
     // Initialize Page
     document.addEventListener('DOMContentLoaded', () => {
-      if (!evaluatorName) {
+      if (!evaluatorName || !evaluatorRole) {
         openNameModal();
       } else {
         updateEvaluatorDisplay();
@@ -1453,24 +1513,37 @@
 
     function openNameModal() {
       evaluatorInput.value = evaluatorName;
+      if (evaluatorRole) {
+        const radio = document.querySelector(`input[name="techDesignRole"][value="${evaluatorRole}"]`);
+        if (radio) radio.checked = true;
+      }
       nameModal.classList.add('active');
       setTimeout(() => evaluatorInput.focus(), 100);
     }
 
     function saveEvaluatorName(e) {
       e.preventDefault();
-      const val = evaluatorInput.value.trim();
-      if (!val) return;
+      const nameVal = evaluatorInput.value.trim();
+      const roleRadio = document.querySelector('input[name="techDesignRole"]:checked');
+      if (!nameVal || !roleRadio) return;
 
-      evaluatorName = val;
+      evaluatorName = nameVal;
+      evaluatorRole = roleRadio.value;
+
       localStorage.setItem(STORAGE_KEY_NAME, evaluatorName);
+      localStorage.setItem(STORAGE_KEY_ROLE, evaluatorRole);
+
       updateEvaluatorDisplay();
       nameModal.classList.remove('active');
       showToast('Avaliador identificado com sucesso!');
     }
 
     function updateEvaluatorDisplay() {
-      displayEvaluatorName.textContent = evaluatorName || 'Não Informado';
+      if (evaluatorName) {
+        displayEvaluatorName.innerHTML = `${evaluatorName} <small style="opacity: 0.8; font-weight: normal; color: var(--text-muted);">(Tech/Design: ${evaluatorRole || 'N/A'})</small>`;
+      } else {
+        displayEvaluatorName.textContent = 'Não Informado';
+      }
     }
 
     function setupStarEvents() {
@@ -1582,6 +1655,7 @@
 
       return {
         avaliador: evaluatorName || "Não Informado",
+        trabalhaComTechDesign: evaluatorRole || "Não Informado",
         dataExportacao: new Date().toISOString(),
         totalPromptsAvaliados: Object.keys(ratingsData).length,
         resultados: formattedRatings
