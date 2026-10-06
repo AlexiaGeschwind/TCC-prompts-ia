@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TCC - Comparativo de Prompts de IA | Hub Interativo com Avaliação</title>
-  <meta name="description" content="Portal de visualização comparativa e avaliação de landing pages geradas por LLMs (Claude, Gemini, GPT-OSS) com base em 3 níveis de prompts.">
+  <meta name="description"
+    content="Portal de visualização comparativa e avaliação de landing pages geradas por LLMs (Claude, Gemini, GPT-OSS) com base em 3 níveis de prompts.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+
   <style>
     :root {
       --bg-dark: #0b0f19;
@@ -17,19 +21,19 @@
       --text-main: #f1f5f9;
       --text-muted: #94a3b8;
       --border-color: rgba(255, 255, 255, 0.08);
-      
+
       --claude-color: #f97316;
       --claude-glow: rgba(249, 115, 22, 0.15);
-      
+
       --gemini-color: #38bdf8;
       --gemini-glow: rgba(56, 189, 248, 0.15);
-      
+
       --gpt-color: #10b981;
       --gpt-glow: rgba(16, 185, 129, 0.15);
 
       --star-active: #fbbf24;
       --star-inactive: #475569;
-      
+
       --radius-lg: 16px;
       --radius-sm: 8px;
       --font-main: 'Inter', sans-serif;
@@ -48,7 +52,7 @@
       color: var(--text-main);
       line-height: 1.6;
       min-height: 100vh;
-      background-image: 
+      background-image:
         radial-gradient(circle at 15% 15%, rgba(249, 115, 22, 0.05) 0%, transparent 40%),
         radial-gradient(circle at 85% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
         radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
@@ -149,8 +153,30 @@
     }
 
     .evaluator-actions {
-      display: flex;
+      display: none;
       gap: 0.6rem;
+    }
+
+    .evaluator-actions.visible {
+      display: flex;
+    }
+
+    .btn-researcher-link {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-researcher-link:hover {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .btn-json-export {
@@ -322,9 +348,17 @@
       transition: opacity 0.3s ease;
     }
 
-    .card[data-model="claude"]::before { background: var(--claude-color); }
-    .card[data-model="gemini"]::before { background: var(--gemini-color); }
-    .card[data-model="gpt"]::before { background: var(--gpt-color); }
+    .card[data-model="claude"]::before {
+      background: var(--claude-color);
+    }
+
+    .card[data-model="gemini"]::before {
+      background: var(--gemini-color);
+    }
+
+    .card[data-model="gpt"]::before {
+      background: var(--gpt-color);
+    }
 
     .card:hover {
       transform: translateY(-4px);
@@ -352,9 +386,20 @@
       border-radius: 6px;
     }
 
-    .tag-p1 { background: rgba(255, 255, 255, 0.08); color: #cbd5e1; }
-    .tag-p2 { background: rgba(56, 189, 248, 0.15); color: #7dd3fc; }
-    .tag-p3 { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .tag-p1 {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+
+    .tag-p2 {
+      background: rgba(56, 189, 248, 0.15);
+      color: #7dd3fc;
+    }
+
+    .tag-p3 {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+    }
 
     .card-title {
       font-family: var(--font-display);
@@ -521,8 +566,15 @@
     }
 
     @keyframes modalSlideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .name-modal-icon {
@@ -639,106 +691,97 @@
       box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
     }
 
-    /* Comments Section */
-    .comments-section {
-      margin-top: 3.5rem;
+    /* Submit Section */
+    .submit-section {
+      margin-top: 4rem;
       margin-bottom: 2rem;
     }
 
-    .comments-card {
+    .submit-card {
       background: var(--bg-card);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: var(--radius-lg);
-      padding: 2rem;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      position: relative;
-    }
-
-    .comments-header {
+      padding: 2.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
+      gap: 1rem;
     }
 
-    .comments-title {
+    .submit-card-header {
       display: flex;
       align-items: center;
       gap: 0.8rem;
     }
 
-    .comments-icon {
-      font-size: 1.5rem;
+    .submit-card-icon {
+      font-size: 2rem;
     }
 
-    .comments-title h3 {
+    .submit-card h3 {
       font-family: var(--font-display);
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       font-weight: 700;
       color: #ffffff;
     }
 
-    .comments-badge {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border-color);
+    .submit-card-desc {
       color: var(--text-muted);
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .comments-subtitle {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      margin-bottom: 1.2rem;
-    }
-
-    .comments-textarea {
-      width: 100%;
-      background: rgba(5, 8, 15, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 12px;
-      padding: 1rem;
-      color: #ffffff;
-      font-family: var(--font-main);
+      max-width: 600px;
       font-size: 0.95rem;
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      line-height: 1.5;
     }
 
-    .comments-textarea:focus {
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    .submit-progress-bar-container {
+      width: 100%;
+      max-width: 500px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .comments-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 1rem;
+    .submit-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #10b981);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 99px;
     }
 
-    .btn-save-comment {
-      background: linear-gradient(135deg, #38bdf8, #0284c7);
+    .submit-status-text {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .btn-submit-evaluation {
+      background: linear-gradient(135deg, #10b981, #059669);
       color: #ffffff;
       border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 10px;
-      font-size: 0.92rem;
+      padding: 1rem 2.5rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+      gap: 0.6rem;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+      transition: all 0.25s ease;
+      margin-top: 0.5rem;
     }
 
-    .btn-save-comment:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(56, 189, 248, 0.35);
+    .btn-submit-evaluation:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 28px rgba(16, 185, 129, 0.45);
     }
+
+
 
     /* Modal / Drawer for Quick Preview */
     .modal-overlay {
@@ -796,7 +839,8 @@
       cursor: pointer;
     }
 
-    .vp-btn.active, .vp-btn:hover {
+    .vp-btn.active,
+    .vp-btn:hover {
       background: rgba(255, 255, 255, 0.15);
       color: #ffffff;
     }
@@ -888,14 +932,186 @@
     }
 
     @media (max-width: 768px) {
-      .title { font-size: 2rem; }
-      .grid { grid-template-columns: 1fr; }
-      .viewport-controls { display: none; }
-      .evaluator-bar { flex-direction: column; text-align: center; }
-      .evaluator-actions { width: 100%; justify-content: center; margin-top: 0.5rem; }
+      .title {
+        font-size: 2rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .viewport-controls {
+        display: none;
+      }
+
+      .evaluator-bar {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .evaluator-actions {
+        width: 100%;
+        justify-content: center;
+        margin-top: 0.5rem;
+      }
+    }
+
+    /* Thank You Modal */
+    .thankyou-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .thankyou-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .thankyou-card {
+      background: linear-gradient(135deg, #131b2e 0%, #0f1724 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 60px rgba(16, 185, 129, 0.08);
+      animation: thankYouPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .thankyou-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #10b981, #38bdf8, #a855f7);
+      border-radius: 24px 24px 0 0;
+    }
+
+    @keyframes thankYouPop {
+      from {
+        transform: scale(0.8) translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .thankyou-emoji {
+      font-size: 4rem;
+      display: block;
+      margin-bottom: 1rem;
+      animation: bounceIn 0.6s 0.2s both;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0); }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .thankyou-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #10b981, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .thankyou-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 0.5rem;
+    }
+
+    .thankyou-name {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #38bdf8;
+      margin: 1rem 0;
+    }
+
+    .thankyou-stats {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .thankyou-stat {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      text-align: center;
+    }
+
+    .thankyou-stat-num {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #10b981;
+      display: block;
+    }
+
+    .thankyou-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .thankyou-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      padding: 0.75rem 1rem;
+      background: rgba(16, 185, 129, 0.08);
+      border-radius: 8px;
+      border-left: 3px solid #10b981;
+      text-align: left;
+    }
+
+    .btn-thankyou-close {
+      background: linear-gradient(135deg, #10b981, #0d9488);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0.9rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-family: var(--font-main);
+    }
+
+    .btn-thankyou-close:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
     }
   </style>
 </head>
+
 <body>
 
   <!-- INITIAL NAME MODAL -->
@@ -903,12 +1119,13 @@
     <div class="name-modal-card">
       <div class="name-modal-icon">✍️</div>
       <h2 class="name-modal-title">Identificação do Avaliador</h2>
-      <p class="name-modal-subtitle">Por favor, insira o seu nome para registrar a avaliação dos prompts no arquivo JSON do TCC.</p>
-      
+      <p class="name-modal-subtitle">Por favor, insira o seu nome para iniciar a avaliação das landing pages do TCC.</p>
+
       <form id="nameForm" onsubmit="saveEvaluatorName(event)">
         <div class="name-input-group">
           <label for="evaluatorInput">Seu Nome Completo:</label>
-          <input type="text" id="evaluatorInput" class="name-input" placeholder="Ex: Alexia Geschwind" required autocomplete="name">
+          <input type="text" id="evaluatorInput" class="name-input" placeholder="Ex: Alexia Geschwind" required
+            autocomplete="name">
         </div>
 
         <div class="name-input-group">
@@ -934,8 +1151,9 @@
     <div class="container">
       <div class="badge-header">⚡ TCC - Trabalho de Conclusão de Curso</div>
       <h1 class="title">Comparativo de Prompts de IA</h1>
-      <p class="subtitle">Navegue, compare o código front-end e avalie as landing pages geradas por Anthropic Claude, Google Gemini e GPT-OSS na escala Likert (1 a 5).</p>
-      
+      <p class="subtitle">Navegue, compare o código front-end e avalie as landing pages geradas por Anthropic Claude,
+        Google Gemini e GPT-OSS.</p>
+
       <!-- Evaluator Info Bar & JSON Actions -->
       <div class="evaluator-bar">
         <div class="evaluator-info">
@@ -944,8 +1162,10 @@
           <button class="btn-edit-evaluator" onclick="openNameModal()">[Alterar]</button>
         </div>
         <div class="evaluator-actions">
-          <button class="btn-json-copy" onclick="copyRatingsJSON()" title="Copiar código JSON para a área de transferência">📋 Copiar JSON</button>
-          <button class="btn-json-export" onclick="exportRatingsJSON()" title="Baixar arquivo JSON com as avaliações">📥 Baixar JSON</button>
+          <button class="btn-json-copy" onclick="copyRatingsJSON()"
+            title="Copiar código JSON para a área de transferência">📋 Copiar JSON</button>
+          <button class="btn-json-export" onclick="exportRatingsJSON()" title="Baixar arquivo JSON com as avaliações">📥
+            Baixar JSON</button>
         </div>
       </div>
 
@@ -975,13 +1195,14 @@
               <span class="tag">Básico</span>
             </div>
             <h3 class="card-title">Claude - Prompt 1</h3>
-            <p class="card-desc">Estrutura inicial com foco em layout semântico, catálogo de peças e seções responsivas.</p>
+            <p class="card-desc">Estrutura inicial com foco em layout semântico, catálogo de peças e seções responsivas.
+            </p>
           </div>
 
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1025,8 +1246,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS CLAUDE/PROMPT 1/index.html', 'Claude - Prompt 1')">⚡ Prévia</button>
-            <a href="./PROMPTS CLAUDE/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS CLAUDE/PROMPT 1/index.html', 'Claude - Prompt 1')">⚡ Prévia</button>
+            <a href="./PROMPTS CLAUDE/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
 
@@ -1044,7 +1267,7 @@
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1088,8 +1311,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS CLAUDE/PROMPT 2/index.html', 'Claude - Prompt 2')">⚡ Prévia</button>
-            <a href="./PROMPTS CLAUDE/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS CLAUDE/PROMPT 2/index.html', 'Claude - Prompt 2')">⚡ Prévia</button>
+            <a href="./PROMPTS CLAUDE/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
 
@@ -1101,13 +1326,14 @@
               <span class="tag">Avançado</span>
             </div>
             <h3 class="card-title">Claude - Prompt 3</h3>
-            <p class="card-desc">Landing page completa com estatísticas, depoimentos, formulário interativo e design premium.</p>
+            <p class="card-desc">Landing page completa com estatísticas, depoimentos, formulário interativo e design
+              premium.</p>
           </div>
 
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1151,8 +1377,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS CLAUDE/PROMPT 3/index.html', 'Claude - Prompt 3')">⚡ Prévia</button>
-            <a href="./PROMPTS CLAUDE/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS CLAUDE/PROMPT 3/index.html', 'Claude - Prompt 3')">⚡ Prévia</button>
+            <a href="./PROMPTS CLAUDE/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
       </div>
@@ -1179,7 +1407,7 @@
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1223,8 +1451,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GEMINI/PROMPT 1/index.html', 'Gemini - Prompt 1')">⚡ Prévia</button>
-            <a href="./PROMPTS GEMINI/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS GEMINI/PROMPT 1/index.html', 'Gemini - Prompt 1')">⚡ Prévia</button>
+            <a href="./PROMPTS GEMINI/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
 
@@ -1242,7 +1472,7 @@
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1286,8 +1516,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GEMINI/PROMPT 2/index.html', 'Gemini - Prompt 2')">⚡ Prévia</button>
-            <a href="./PROMPTS GEMINI/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS GEMINI/PROMPT 2/index.html', 'Gemini - Prompt 2')">⚡ Prévia</button>
+            <a href="./PROMPTS GEMINI/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
 
@@ -1299,13 +1531,14 @@
               <span class="tag">Avançado</span>
             </div>
             <h3 class="card-title">Gemini - Prompt 3</h3>
-            <p class="card-desc">Versão ultra-detalhada com seções de depoimentos, FAQ sanfonado e formulário completo.</p>
+            <p class="card-desc">Versão ultra-detalhada com seções de depoimentos, FAQ sanfonado e formulário completo.
+            </p>
           </div>
 
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1349,8 +1582,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GEMINI/PROMPT 3/index.html', 'Gemini - Prompt 3')">⚡ Prévia</button>
-            <a href="./PROMPTS GEMINI/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS GEMINI/PROMPT 3/index.html', 'Gemini - Prompt 3')">⚡ Prévia</button>
+            <a href="./PROMPTS GEMINI/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
       </div>
@@ -1377,7 +1612,7 @@
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1421,8 +1656,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 1/index.html', 'GPT-OSS - Prompt 1')">⚡ Prévia</button>
-            <a href="./PROMPTS GPT-OSS/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 1/index.html', 'GPT-OSS - Prompt 1')">⚡ Prévia</button>
+            <a href="./PROMPTS GPT-OSS/PROMPT 1/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
 
@@ -1434,13 +1671,14 @@
               <span class="tag">Intermediário</span>
             </div>
             <h3 class="card-title">GPT-OSS - Prompt 2</h3>
-            <p class="card-desc">Sistema de design completo com variáveis CSS, suporte a modo claro/escuro e interatividade.</p>
+            <p class="card-desc">Sistema de design completo com variáveis CSS, suporte a modo claro/escuro e
+              interatividade.</p>
           </div>
 
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1484,8 +1722,10 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 2/index.html', 'GPT-OSS - Prompt 2')">⚡ Prévia</button>
-            <a href="./PROMPTS GPT-OSS/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 2/index.html', 'GPT-OSS - Prompt 2')">⚡ Prévia</button>
+            <a href="./PROMPTS GPT-OSS/PROMPT 2/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
 
@@ -1503,7 +1743,7 @@
           <!-- RATING BOX -->
           <div class="card-rating-box">
             <div class="rating-header">
-              <span>⭐ Avaliação Likert (1 a 5)</span>
+              <span>⭐ Avaliação</span>
             </div>
             <div class="rating-item" data-topic="coerenciaVisual">
               <div class="rating-item-header">
@@ -1547,30 +1787,27 @@
           </div>
 
           <div class="card-actions">
-            <button class="btn-action btn-preview" onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 3/index.html', 'GPT-OSS - Prompt 3')">⚡ Prévia</button>
-            <a href="./PROMPTS GPT-OSS/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir Página</a>
+            <button class="btn-action btn-preview"
+              onclick="openPreview('./PROMPTS GPT-OSS/PROMPT 3/index.html', 'GPT-OSS - Prompt 3')">⚡ Prévia</button>
+            <a href="./PROMPTS GPT-OSS/PROMPT 3/index.html" target="_blank" class="btn-action btn-open">🔗 Abrir
+              Página</a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- GENERAL COMMENTS SECTION -->
-    <section class="comments-section">
-      <div class="comments-card">
-        <div class="comments-header">
-          <div class="comments-title">
-            <span class="comments-icon">💬</span>
-            <h3>Observações e Comentários Gerais</h3>
-          </div>
-          <span class="comments-badge">Opcional</span>
+    <!-- SUBMIT EVALUATION SECTION -->
+    <section class="submit-section">
+      <div class="submit-card">
+        <div class="submit-card-header">
+          <span class="submit-card-icon">🚀</span>
+          <h3>Finalizar e Enviar Avaliação</h3>
         </div>
-        <p class="comments-subtitle">Deixe aqui suas impressões gerais, observações adicionais sobre os prompts/modelos ou considerações para a pesquisa do TCC.</p>
-        <div class="comments-body">
-          <textarea id="generalCommentInput" class="comments-textarea" placeholder="Escreva seu comentário ou observações gerais..." rows="4"></textarea>
-          <div class="comments-actions">
-            <button type="button" class="btn-save-comment" onclick="saveGeneralComment()">💾 Salvar Comentário</button>
-          </div>
-        </div>
+        <p class="submit-card-desc">Após preencher as notas dos 9 modelos, clique no botão abaixo para concluir e
+          registrar sua contribuição para a pesquisa do TCC.</p>
+
+        <button type="button" class="btn-submit-evaluation" onclick="submitEvaluation()">✅ Enviar Avaliação
+          Completa</button>
       </div>
     </section>
 
@@ -1599,9 +1836,33 @@
   <!-- TOAST NOTIFICATION -->
   <div class="toast" id="toast">Feedback enviado!</div>
 
+  <!-- THANK YOU MODAL -->
+  <div class="thankyou-overlay" id="thankyouModal">
+    <div class="thankyou-card">
+      <span class="thankyou-emoji">🎉</span>
+      <h2 class="thankyou-title">Obrigada!</h2>
+      <p class="thankyou-subtitle">Sua avaliação foi registrada com sucesso e contribui imensamente para a pesquisa do TCC.</p>
+      <p class="thankyou-name" id="thankyouName"></p>
+      <div class="thankyou-stats">
+        <div class="thankyou-stat">
+          <span class="thankyou-stat-num" id="thankyouRatedCount">0</span>
+          <span class="thankyou-stat-label">Prompts avaliados</span>
+        </div>
+        <div class="thankyou-stat">
+          <span class="thankyou-stat-num" id="thankyouTopicsCount">0</span>
+          <span class="thankyou-stat-label">Notas dadas</span>
+        </div>
+      </div>
+      <p class="thankyou-note">✅ Suas avaliações foram registradas com sucesso. Obrigada pela sua contribuição para a pesquisa!</p>
+      <button class="btn-thankyou-close" onclick="closeThankyouModal()">✓ Fechar</button>
+    </div>
+  </div>
+
   <footer>
     <div class="container">
-      <p>&copy; 2026 Alexia Geschwind — Trabalho de Conclusão de Curso (TCC). Todos os direitos reservados.</p>
+      <p>&copy; 2026 Alexia Geschwind — Trabalho de Conclusão de Curso (TCC). Todos os direitos reservados. <button
+          type="button" onclick="toggleResearcherMode()" class="btn-researcher-link"
+          title="Visível apenas para a pesquisadora">🔒 Pesquisador (JSON)</button></p>
     </div>
   </footer>
 
@@ -1609,12 +1870,10 @@
     // State storage for evaluations
     const STORAGE_KEY_NAME = 'tcc_evaluator_name';
     const STORAGE_KEY_ROLE = 'tcc_evaluator_role';
-    const STORAGE_KEY_COMMENT = 'tcc_evaluator_comment';
     const STORAGE_KEY_RATINGS = 'tcc_prompt_ratings_v1';
 
     let evaluatorName = localStorage.getItem(STORAGE_KEY_NAME) || '';
     let evaluatorRole = localStorage.getItem(STORAGE_KEY_ROLE) || '';
-    let evaluatorComment = localStorage.getItem(STORAGE_KEY_COMMENT) || '';
     let ratingsData = JSON.parse(localStorage.getItem(STORAGE_KEY_RATINGS) || '{}');
 
     // UI Elements
@@ -1630,28 +1889,48 @@
       } else {
         updateEvaluatorDisplay();
       }
+
+      // Auto-enable researcher JSON mode if previously enabled or if ?admin URL param is present
+      if (localStorage.getItem('tcc_researcher_mode') === 'true' || window.location.search.includes('admin')) {
+        const actions = document.querySelector('.evaluator-actions');
+        if (actions) actions.classList.add('visible');
+      }
+
       renderRatings();
       setupStarEvents();
-      setupCommentEvents();
     });
 
-    function setupCommentEvents() {
-      const commentInput = document.getElementById('generalCommentInput');
-      if (commentInput) {
-        commentInput.value = evaluatorComment;
-        commentInput.addEventListener('input', () => {
-          evaluatorComment = commentInput.value;
-          localStorage.setItem(STORAGE_KEY_COMMENT, evaluatorComment);
-        });
-      }
+    // SHA-256 hash for password '4587' (plain text password is NOT visible in source code)
+    const RESEARCHER_PASSWORD_HASH = '2204f2f125c2a5e5eb4329051de5546c9533beec192d8ba5269b01b78df7f47f';
+
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    function saveGeneralComment() {
-      const commentInput = document.getElementById('generalCommentInput');
-      if (commentInput) {
-        evaluatorComment = commentInput.value.trim();
-        localStorage.setItem(STORAGE_KEY_COMMENT, evaluatorComment);
-        showToast('Comentário salvo com sucesso!');
+    async function toggleResearcherMode() {
+      const actions = document.querySelector('.evaluator-actions');
+      if (!actions) return;
+
+      const isVisible = actions.classList.contains('visible');
+      if (isVisible) {
+        actions.classList.remove('visible');
+        localStorage.setItem('tcc_researcher_mode', 'false');
+        showToast('Modo Pesquisador ocultado.');
+      } else {
+        const inputPass = prompt('🔑 Digite a senha da pesquisadora para liberar o JSON:');
+        if (inputPass !== null) {
+          const enteredHash = await sha256(inputPass.trim());
+          if (enteredHash === RESEARCHER_PASSWORD_HASH) {
+            actions.classList.add('visible');
+            localStorage.setItem('tcc_researcher_mode', 'true');
+            showToast('Modo Pesquisador ativado (botões JSON visíveis)!');
+          } else {
+            alert('❌ Senha incorreta!');
+          }
+        }
       }
     }
 
@@ -1800,7 +2079,6 @@
       return {
         avaliador: evaluatorName || "Não Informado",
         trabalhaComTechDesign: evaluatorRole || "Não Informado",
-        comentarioGeral: evaluatorComment || "",
         dataExportacao: new Date().toISOString(),
         totalPromptsAvaliados: Object.keys(ratingsData).length,
         resultados: formattedRatings
@@ -1817,7 +2095,7 @@
       const jsonString = JSON.stringify(data, null, 2);
       const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      
+
       const safeName = evaluatorName.toLowerCase().replace(/[^a-z0-9]/g, '_');
       const filename = `avaliacao_tcc_${safeName}.json`;
 
@@ -1897,16 +2175,48 @@
     function setViewport(mode, btn) {
       document.querySelectorAll('.vp-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      
+
       iframeWrapper.className = 'iframe-wrapper ' + mode;
     }
 
-    // Close on Escape key
+    function submitEvaluation() {
+      if (!evaluatorName) {
+        openNameModal();
+        return;
+      }
+
+      const totalTopics = Object.values(ratingsData).reduce((acc, r) => acc + Object.keys(r).length, 0);
+      const totalPrompts = Object.keys(ratingsData).length;
+
+      // Data is already saved in localStorage on every star click — nothing else needed here
+
+      // Populate and show thank you modal
+      document.getElementById('thankyouName').textContent = `👤 ${evaluatorName}`;
+      document.getElementById('thankyouRatedCount').textContent = totalPrompts;
+      document.getElementById('thankyouTopicsCount').textContent = totalTopics;
+
+      const thankyouModal = document.getElementById('thankyouModal');
+      thankyouModal.classList.add('active');
+    }
+
+    function closeThankyouModal() {
+      document.getElementById('thankyouModal').classList.remove('active');
+    }
+
+    // Keyboard Shortcuts (Ctrl+Shift+J for Researcher access, Escape to close preview)
     document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
+        e.preventDefault();
+        toggleResearcherMode();
+      }
       if (e.key === 'Escape' && modal.classList.contains('active')) {
         closePreview();
+      }
+      if (e.key === 'Escape' && document.getElementById('thankyouModal').classList.contains('active')) {
+        closeThankyouModal();
       }
     });
   </script>
 </body>
+
 </html>
