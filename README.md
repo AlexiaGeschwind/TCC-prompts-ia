@@ -71,3 +71,11 @@ Ao clicar em **Enviar Avaliação Completa**, as 27 notas dos 9 prompts são val
 O nome é a única identificação do participante. Os rascunhos no navegador são separados por nome, ignorando maiúsculas e espaços repetidos; nomes iguais são tratados como a mesma pessoa. Ao mudar o nome, as notas daquele nome são carregadas ou um rascunho vazio é iniciado. O campo Tech/Design é apenas uma resposta da pesquisa. Os rascunhos antigos não são importados automaticamente porque não tinham separação por nome.
 
 Os arquivos têm o formato `avaliacao_nome_data_sufixo.json`. Data e sufixo distinguem envios e evitam sobrescrever respostas anteriores, inclusive quando o nome se repete. Os JSONs são ignorados pelo Git e o acesso direto à pasta via Apache é bloqueado pelo `.htaccess`; consulte os arquivos pelo sistema de arquivos do servidor.
+
+## Leitor de resultados
+
+Acesse **http://localhost/TCC-prompts-ia/leitor-resultados.php** para ler os JSONs da pasta `resultados/`. O painel mostra as médias de coerência visual, experiência do usuário (UX) e atratividade estética por LLM, por nível de prompt e por combinação de LLM e prompt, com a quantidade de notas usada em cada cálculo.
+
+Por padrão, somente o envio válido mais recente de cada nome entra nas médias. A opção **Todos os envios** inclui respostas repetidas. Notas ausentes ou inválidas são excluídas do cálculo; arquivos ilegíveis ou sem notas válidas são contabilizados como ignorados. Clique em **Atualizar resultados** para reler os arquivos. O painel exibe dados agregados, sem nomes dos participantes, e é acessado diretamente pelo endereço acima.
+
+Para verificar os cálculos com dados de teste isolados, execute `php tests/resultados.php`.
