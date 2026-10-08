@@ -60,5 +60,14 @@ Como as landing pages foram desenvolvidas utilizando HTML, CSS e JS nativos:
    ```bash
    git clone https://github.com/AlexiaGeschwind/TCC-prompts-ia.git
    ```
-2. Abra o arquivo **`index.html`** na raiz do projeto no seu navegador web para navegar por todas as páginas através do Hub Interativo.
+2. Para coletar avaliações, inicie o Apache no XAMPP e acesse **http://localhost/TCC-prompts-ia/**. O envio requer PHP com `mbstring` e `iconv`, disponíveis no XAMPP. Abrir o HTML diretamente ou usar GitHub Pages permite apenas visualizar as páginas.
 3. Ou navegue diretamente até a pasta da landing page desejada (exemplo: `PROMPTS CLAUDE/PROMPT 1`) e abra o seu `index.html`.
+
+
+## Coleta de resultados
+
+Ao clicar em **Enviar Avaliação Completa**, as 27 notas dos 9 prompts são validadas e enviadas para `salvar-resultados.php`. Cada envio gera um novo JSON em `resultados/`, contendo nome, resposta sobre Tech/Design, data de recebimento e notas. A confirmação só aparece depois da gravação no servidor. O Apache precisa ter permissão de escrita nessa pasta.
+
+O nome é a única identificação do participante. Os rascunhos no navegador são separados por nome, ignorando maiúsculas e espaços repetidos; nomes iguais são tratados como a mesma pessoa. Ao mudar o nome, as notas daquele nome são carregadas ou um rascunho vazio é iniciado. O campo Tech/Design é apenas uma resposta da pesquisa. Os rascunhos antigos não são importados automaticamente porque não tinham separação por nome.
+
+Os arquivos têm o formato `avaliacao_nome_data_sufixo.json`. Data e sufixo distinguem envios e evitam sobrescrever respostas anteriores, inclusive quando o nome se repete. Os JSONs são ignorados pelo Git e o acesso direto à pasta via Apache é bloqueado pelo `.htaccess`; consulte os arquivos pelo sistema de arquivos do servidor.

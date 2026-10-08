@@ -152,73 +152,6 @@
       color: #fff;
     }
 
-    .evaluator-actions {
-      display: none;
-      gap: 0.6rem;
-    }
-
-    .evaluator-actions.visible {
-      display: flex;
-    }
-
-    .btn-researcher-link {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: var(--text-muted);
-      padding: 0.25rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      margin-left: 10px;
-      transition: all 0.2s ease;
-    }
-
-    .btn-researcher-link:hover {
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .btn-json-export {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: #ffffff;
-      border: none;
-      padding: 0.5rem 1.1rem;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-      transition: all 0.2s ease;
-    }
-
-    .btn-json-export:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-    }
-
-    .btn-json-copy {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 0.5rem 0.9rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: all 0.2s ease;
-    }
-
-    .btn-json-copy:hover {
-      background: rgba(255, 255, 255, 0.16);
-    }
-
     /* Filters */
     .filter-bar {
       display: flex;
@@ -949,11 +882,6 @@
         text-align: center;
       }
 
-      .evaluator-actions {
-        width: 100%;
-        justify-content: center;
-        margin-top: 0.5rem;
-      }
     }
 
     /* Thank You Modal */
@@ -1124,7 +1052,7 @@
       <form id="nameForm" onsubmit="saveEvaluatorName(event)">
         <div class="name-input-group">
           <label for="evaluatorInput">Seu Nome Completo:</label>
-          <input type="text" id="evaluatorInput" class="name-input" placeholder="Ex: Alexia Geschwind" required
+          <input type="text" id="evaluatorInput" maxlength="150" class="name-input" placeholder="Ex: Alexia Geschwind" required
             autocomplete="name">
         </div>
 
@@ -1154,18 +1082,12 @@
       <p class="subtitle">Navegue, compare o código front-end e avalie as landing pages geradas por Anthropic Claude,
         Google Gemini e GPT-OSS.</p>
 
-      <!-- Evaluator Info Bar & JSON Actions -->
+      <!-- Evaluator Info Bar -->
       <div class="evaluator-bar">
         <div class="evaluator-info">
           <span>👤 Avaliador:</span>
           <span class="evaluator-name" id="displayEvaluatorName">Não Informado</span>
           <button class="btn-edit-evaluator" onclick="openNameModal()">[Alterar]</button>
-        </div>
-        <div class="evaluator-actions">
-          <button class="btn-json-copy" onclick="copyRatingsJSON()"
-            title="Copiar código JSON para a área de transferência">📋 Copiar JSON</button>
-          <button class="btn-json-export" onclick="exportRatingsJSON()" title="Baixar arquivo JSON com as avaliações">📥
-            Baixar JSON</button>
         </div>
       </div>
 
@@ -1860,9 +1782,7 @@
 
   <footer>
     <div class="container">
-      <p>&copy; 2026 Alexia Geschwind — Trabalho de Conclusão de Curso (TCC). Todos os direitos reservados. <button
-          type="button" onclick="toggleResearcherMode()" class="btn-researcher-link"
-          title="Visível apenas para a pesquisadora">🔒 Pesquisador (JSON)</button></p>
+      <p>&copy; 2026 Alexia Geschwind — Trabalho de Conclusão de Curso (TCC). Todos os direitos reservados.</p>
     </div>
   </footer>
 
@@ -1870,11 +1790,24 @@
     // State storage for evaluations
     const STORAGE_KEY_NAME = 'tcc_evaluator_name';
     const STORAGE_KEY_ROLE = 'tcc_evaluator_role';
-    const STORAGE_KEY_RATINGS = 'tcc_prompt_ratings_v1';
+    const STORAGE_KEY_RATINGS = 'tcc_prompt_ratings_v2:';
+
+    function ratingsKey(name) {
+      return STORAGE_KEY_RATINGS + name.normalize('NFC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
+    }
+
+    function loadRatings(name) {
+      try {
+        return JSON.parse(localStorage.getItem(ratingsKey(name)) || '{}') || {};
+      } catch {
+        return {};
+      }
+    }
 
     let evaluatorName = localStorage.getItem(STORAGE_KEY_NAME) || '';
     let evaluatorRole = localStorage.getItem(STORAGE_KEY_ROLE) || '';
-    let ratingsData = JSON.parse(localStorage.getItem(STORAGE_KEY_RATINGS) || '{}');
+    let ratingsData = loadRatings(evaluatorName);
+    let submitting = false;
 
     // UI Elements
     const nameModal = document.getElementById('nameModal');
@@ -1890,49 +1823,9 @@
         updateEvaluatorDisplay();
       }
 
-      // Auto-enable researcher JSON mode if previously enabled or if ?admin URL param is present
-      if (localStorage.getItem('tcc_researcher_mode') === 'true' || window.location.search.includes('admin')) {
-        const actions = document.querySelector('.evaluator-actions');
-        if (actions) actions.classList.add('visible');
-      }
-
       renderRatings();
       setupStarEvents();
     });
-
-    // SHA-256 hash for password '4587' (plain text password is NOT visible in source code)
-    const RESEARCHER_PASSWORD_HASH = '2204f2f125c2a5e5eb4329051de5546c9533beec192d8ba5269b01b78df7f47f';
-
-    async function sha256(message) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    async function toggleResearcherMode() {
-      const actions = document.querySelector('.evaluator-actions');
-      if (!actions) return;
-
-      const isVisible = actions.classList.contains('visible');
-      if (isVisible) {
-        actions.classList.remove('visible');
-        localStorage.setItem('tcc_researcher_mode', 'false');
-        showToast('Modo Pesquisador ocultado.');
-      } else {
-        const inputPass = prompt('🔑 Digite a senha da pesquisadora para liberar o JSON:');
-        if (inputPass !== null) {
-          const enteredHash = await sha256(inputPass.trim());
-          if (enteredHash === RESEARCHER_PASSWORD_HASH) {
-            actions.classList.add('visible');
-            localStorage.setItem('tcc_researcher_mode', 'true');
-            showToast('Modo Pesquisador ativado (botões JSON visíveis)!');
-          } else {
-            alert('❌ Senha incorreta!');
-          }
-        }
-      }
-    }
 
     function openNameModal() {
       evaluatorInput.value = evaluatorName;
@@ -1946,11 +1839,14 @@
 
     function saveEvaluatorName(e) {
       e.preventDefault();
-      const nameVal = evaluatorInput.value.trim();
+      if (submitting) return;
+      const nameVal = evaluatorInput.value.normalize('NFC').trim().replace(/\s+/g, ' ');
       const roleRadio = document.querySelector('input[name="techDesignRole"]:checked');
       if (!nameVal || !roleRadio) return;
 
       evaluatorName = nameVal;
+      ratingsData = loadRatings(evaluatorName);
+      renderRatings();
       evaluatorRole = roleRadio.value;
 
       localStorage.setItem(STORAGE_KEY_NAME, evaluatorName);
@@ -1962,11 +1858,7 @@
     }
 
     function updateEvaluatorDisplay() {
-      if (evaluatorName) {
-        displayEvaluatorName.innerHTML = `${evaluatorName} <small style="opacity: 0.8; font-weight: normal; color: var(--text-muted);">(Tech/Design: ${evaluatorRole || 'N/A'})</small>`;
-      } else {
-        displayEvaluatorName.textContent = 'Não Informado';
-      }
+      displayEvaluatorName.textContent = evaluatorName || 'Não Informado';
     }
 
     function setupStarEvents() {
@@ -2002,10 +1894,10 @@
               }
 
               ratingsData[promptId][topic] = starValue;
-              localStorage.setItem(STORAGE_KEY_RATINGS, JSON.stringify(ratingsData));
+              localStorage.setItem(ratingsKey(evaluatorName), JSON.stringify(ratingsData));
 
               updateItemStars(starBtns, starValue, scoreDisplay);
-              showToast(`Nota ${starValue} salva!`);
+              showToast(`Nota ${starValue} guardada no rascunho. Envie ao finalizar.`);
             });
           });
         });
@@ -2085,48 +1977,6 @@
       };
     }
 
-    function exportRatingsJSON() {
-      if (!evaluatorName) {
-        openNameModal();
-        return;
-      }
-
-      const data = getFormattedJSONData();
-      const jsonString = JSON.stringify(data, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-
-      const safeName = evaluatorName.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      const filename = `avaliacao_tcc_${safeName}.json`;
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      showToast('Arquivo JSON baixado!');
-    }
-
-    function copyRatingsJSON() {
-      if (!evaluatorName) {
-        openNameModal();
-        return;
-      }
-
-      const data = getFormattedJSONData();
-      const jsonString = JSON.stringify(data, null, 2);
-
-      navigator.clipboard.writeText(jsonString).then(() => {
-        showToast('JSON copiado para a área de transferência!');
-      }).catch(err => {
-        console.error('Erro ao copiar JSON:', err);
-        showToast('Erro ao copiar JSON.');
-      });
-    }
-
     function showToast(msg) {
       toast.textContent = msg;
       toast.classList.add('show');
@@ -2179,36 +2029,56 @@
       iframeWrapper.className = 'iframe-wrapper ' + mode;
     }
 
-    function submitEvaluation() {
+    async function submitEvaluation() {
+      if (submitting) return;
       if (!evaluatorName) {
         openNameModal();
         return;
       }
 
-      const totalTopics = Object.values(ratingsData).reduce((acc, r) => acc + Object.keys(r).length, 0);
-      const totalPrompts = Object.keys(ratingsData).length;
+      const data = getFormattedJSONData();
+      const complete = Object.values(data.resultados).every(result =>
+        Object.values(result.avaliacoes).every(value => Number.isInteger(value) && value >= 1 && value <= 5));
+      if (!complete) {
+        showToast('Preencha as 27 notas dos 9 prompts antes de enviar.');
+        return;
+      }
 
-      // Data is already saved in localStorage on every star click — nothing else needed here
-
-      // Populate and show thank you modal
-      document.getElementById('thankyouName').textContent = `👤 ${evaluatorName}`;
-      document.getElementById('thankyouRatedCount').textContent = totalPrompts;
-      document.getElementById('thankyouTopicsCount').textContent = totalTopics;
-
-      const thankyouModal = document.getElementById('thankyouModal');
-      thankyouModal.classList.add('active');
+      const button = document.querySelector('.btn-submit-evaluation');
+      const originalText = button.textContent;
+      submitting = true;
+      button.disabled = true;
+      button.textContent = 'Enviando avaliação...';
+      try {
+        const response = await fetch('./salvar-resultados.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (!response.ok || result.sucesso !== true) {
+          throw new Error(result.erro || 'Não foi possível salvar a avaliação.');
+        }
+        document.getElementById('thankyouName').textContent = `👤 ${data.avaliador}`;
+        document.getElementById('thankyouRatedCount').textContent = 9;
+        document.getElementById('thankyouTopicsCount').textContent = 27;
+        document.getElementById('thankyouModal').classList.add('active');
+      } catch (error) {
+        showToast('Não foi possível enviar. Seu rascunho foi mantido; tente novamente.');
+        console.error('Erro ao enviar avaliação:', error);
+      } finally {
+        submitting = false;
+        button.disabled = false;
+        button.textContent = originalText;
+      }
     }
 
     function closeThankyouModal() {
       document.getElementById('thankyouModal').classList.remove('active');
     }
 
-    // Keyboard Shortcuts (Ctrl+Shift+J for Researcher access, Escape to close preview)
+    // Escape closes the preview and confirmation modals
     document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
-        e.preventDefault();
-        toggleResearcherMode();
-      }
       if (e.key === 'Escape' && modal.classList.contains('active')) {
         closePreview();
       }
